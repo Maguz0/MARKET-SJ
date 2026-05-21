@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>San Jorge Ventas</title>
+    <link rel="stylesheet" href="src/css/styles.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="src/assets/img/logo.png">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js"></script>
+</head>
+<body>
+    <!-- Contenedor Principal -->
+    <div id="app">
+        <!-- Barra Superior -->
+        <header>
+            <div class="logo">
+                <img src="src/assets/img/logo.png" alt="San Jorge">
+                <h1>San Jorge Ventas</h1>
+            </div>
+            <div class="user-menu" id="userMenu">
+                <button id="loginBtn">Iniciar Sesión</button>
+            </div>
+        </header>
+
+        <!-- Navegación -->
+        <nav>
+            <ul>
+                <li><a href="#home" class="nav-active">Inicio</a></li>
+                <li><a href="#catalog">Catálogo</a></li>
+                <li><a href="#search">Buscar</a></li>
+                <li><a href="#chat">Chat</a></li>
+                <li><a href="#config">Configuración</a></li>
+            </ul>
+        </nav>
+
+        <!-- Secciones -->
+        <main>
+            <!-- Sección Home (Ventas Fijadas + Productos) -->
+            <section id="home" class="section active">
+                <h2>Ventas Destacadas</h2>
+                <div class="fixed-sales" id="fixedSales"></div>
+                <h2>Productos Nuevos</h2>
+                <div class="product-grid" id="productGrid"></div>
+            </section>
+
+            <!-- Sección Catálogo (Ropa, Trajes, Productos) -->
+            <section id="catalog" class="section">
+                <div class="catalog-filter">
+                    <button class="cat-btn active" data-category="ropa">Ropa</button>
+                    <button class="cat-btn" data-category="trajes">Trajes</button>
+                    <button class="cat-btn" data-category="productos">Productos</button>
+                </div>
+                <div class="catalog-content" id="catalogContent"></div>
+            </section>
+
+            <!-- Sección Buscador -->
+            <section id="search" class="section">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Buscar productos...">
+                    <button id="searchBtn">🔍</button>
+                </div>
+                <div class="search-results" id="searchResults"></div>
+            </section>
+
+            <!-- Sección Chat -->
+            <section id="chat" class="section">
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <h3>Chat Online</h3>
+                        <select id="chatSelect">
+                            <option value="">Seleccionar contacto</option>
+                        </select>
+                    </div>
+                    <div class="chat-messages" id="chatMessages"></div>
+                    <div class="chat-input">
+                        <input type="text" id="chatMsg" placeholder="Escribe tu mensaje...">
+                        <button id="sendMsg">Enviar</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección Configuración -->
+            <section id="config" class="section">
+                <div class="config-grid">
+                    <!-- Color -->
+                    <div class="config-item">
+                        <h3>Color de App</h3>
+                        <select id="colorSelect">
+                            <option value="default">Default</option>
+                            <option value="blue">Azul</option>
+                            <option value="green">Verde</option>
+                            <option value="red">Rojo</option>
+                        </select>
+                    </div>
+                    <!-- Perfil -->
+                    <div class="config-item">
+                        <h3>Perfil</h3>
+                        <div id="profileConfig">
+                            <p>Nombre: <span id="profileName"></span></p>
+                            <button id="editProfile">Editar</button>
+                        </div>
+                    </div>
+                    <!-- Subir Producto -->
+                    <div class="config-item">
+                        <h3>Subir Producto</h3>
+                        <form id="uploadForm">
+                            <input type="text" id="productName" placeholder="Nombre">
+                            <input type="number" id="productPrice" placeholder="Precio">
+                            <select id="productCategory">
+                                <option value="ropa">Ropa</option>
+                                <option value="trajes">Trajes</option>
+                                <option value="productos">Productos</option>
+                            </select>
+                            <input type="file" id="productImage" accept="image/*">
+                            <button type="submit">Subir</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Modal Login -->
+        <div id="loginModal" class="modal">
+            <div class="modal-content">
+                <h2>Registro con Gmail</h2>
+                <p>Selecciona tu tipo de usuario:</p>
+                <select id="userType">
+                    <option value="cliente">Cliente</option>
+                    <option value="vendedor">Vendedor</option>
+                </select>
+                <button id="googleLogin">Login con Google</button>
+                <button id="closeModal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="src/js/firebase.js"></script>
+    <script src="src/js/auth.js"></script>
+    <script src="src/js/mercado.js"></script>
+</body>
+</html>
