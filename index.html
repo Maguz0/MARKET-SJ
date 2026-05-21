@@ -3,145 +3,263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>San Jorge Ventas</title>
+    <title>San Jorge Market</title>
     <link rel="stylesheet" href="src/css/styles.css">
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="src/assets/img/logo.png">
+    
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js"></script>
+    
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Contenedor Principal -->
-    <div id="app">
-        <!-- Barra Superior -->
-        <header>
-            <div class="logo">
-                <img src="src/assets/img/logo.png" alt="San Jorge">
-                <h1>San Jorge Ventas</h1>
-            </div>
-            <div class="user-menu" id="userMenu">
-                <button id="loginBtn">Iniciar Sesión</button>
-            </div>
-        </header>
-
-        <!-- Navegación -->
-        <nav>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="src/assets/img/logo.png" alt="San Jorge Market Logo" class="logo">
+            <h1>San Jorge Market</h1>
+        </div>
+        <nav class="nav-menu">
             <ul>
-                <li><a href="#home" class="nav-active">Inicio</a></li>
-                <li><a href="#catalog">Catálogo</a></li>
-                <li><a href="#search">Buscar</a></li>
-                <li><a href="#chat">Chat</a></li>
-                <li><a href="#config">Configuración</a></li>
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#productos" class="nav-link">Productos</a></li>
+                <li><a href="#gangas" class="nav-link">🎯 Gangas</a></li>
+                <li><a href="#perfil" class="nav-link">Perfil</a></li>
             </ul>
         </nav>
+        <div class="auth-status">
+            <span id="auth-status-text">No autenticado</span>
+            <button id="logout-btn" class="hidden">Logout</button>
+        </div>
+    </header>
 
-        <!-- Secciones -->
-        <main>
-            <!-- Sección Home (Ventas Fijadas + Productos) -->
-            <section id="home" class="section active">
-                <h2>Ventas Destacadas</h2>
-                <div class="fixed-sales" id="fixedSales"></div>
-                <h2>Productos Nuevos</h2>
-                <div class="product-grid" id="productGrid"></div>
-            </section>
-
-            <!-- Sección Catálogo (Ropa, Trajes, Productos) -->
-            <section id="catalog" class="section">
-                <div class="catalog-filter">
-                    <button class="cat-btn active" data-category="ropa">Ropa</button>
-                    <button class="cat-btn" data-category="trajes">Trajes</button>
-                    <button class="cat-btn" data-category="productos">Productos</button>
+    <!-- Main Container -->
+    <main id="main-container">
+        <!-- Login/Register Section -->
+        <section id="auth-section" class="section">
+            <div class="auth-container">
+                <div class="auth-form">
+                    <h2>Login / Registro</h2>
+                    <form id="login-form">
+                        <input type="email" id="login-email" placeholder="Email" required>
+                        <input type="password" id="login-password" placeholder="Password" required>
+                        <button type="submit">Login</button>
+                    </form>
+                    <form id="register-form">
+                        <input type="email" id="register-email" placeholder="Email" required>
+                        <input type="password" id="register-password" placeholder="Password" required>
+                        <input type="text" id="register-name" placeholder="Nombre completo" required>
+                        <button type="submit">Registrarse</button>
+                    </form>
                 </div>
-                <div class="catalog-content" id="catalogContent"></div>
-            </section>
+            </div>
+        </section>
 
-            <!-- Sección Buscador -->
-            <section id="search" class="section">
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Buscar productos...">
-                    <button id="searchBtn">🔍</button>
-                </div>
-                <div class="search-results" id="searchResults"></div>
-            </section>
+        <!-- User Profile -->
+        <section id="user-section" class="section hidden">
+            <div id="user-profile-container"></div>
+            <div class="user-actions">
+                <button onclick="toggleUserType()">Cambiar Tipo (Cliente/Vendedor)</button>
+                <select id="estado-select" onchange="updateUserEstado(this.value)">
+                    <option value="activo">Activo</option>
+                    <option value="inactivo">Inactivo</option>
+                    <option value="suspendido">Suspendido</option>
+                </select>
+            </div>
+        </section>
 
-            <!-- Sección Chat -->
-            <section id="chat" class="section">
-                <div class="chat-container">
-                    <div class="chat-header">
-                        <h3>Chat Online</h3>
-                        <select id="chatSelect">
-                            <option value="">Seleccionar contacto</option>
-                        </select>
+        <!-- Productos -->
+        <section id="productos-section" class="section hidden">
+            <h2>📦 Productos</h2>
+            
+            <!-- Formulario agregar producto -->
+            <div id="add-product-form">
+                <h3>Agregar Producto</h3>
+                <form id="product-form">
+                    <div class="form-group">
+                        <input type="text" id="product-name" placeholder="Nombre del producto" required>
                     </div>
-                    <div class="chat-messages" id="chatMessages"></div>
-                    <div class="chat-input">
-                        <input type="text" id="chatMsg" placeholder="Escribe tu mensaje...">
-                        <button id="sendMsg">Enviar</button>
+                    <div class="form-group">
+                        <textarea id="product-description" placeholder="Descripción" required></textarea>
                     </div>
-                </div>
-            </section>
-
-            <!-- Sección Configuración -->
-            <section id="config" class="section">
-                <div class="config-grid">
-                    <!-- Color -->
-                    <div class="config-item">
-                        <h3>Color de App</h3>
-                        <select id="colorSelect">
-                            <option value="default">Default</option>
-                            <option value="blue">Azul</option>
-                            <option value="green">Verde</option>
-                            <option value="red">Rojo</option>
-                        </select>
+                    <div class="form-group">
+                        <input type="number" id="product-price" placeholder="Precio" required>
                     </div>
-                    <!-- Perfil -->
-                    <div class="config-item">
-                        <h3>Perfil</h3>
-                        <div id="profileConfig">
-                            <p>Nombre: <span id="profileName"></span></p>
-                            <button id="editProfile">Editar</button>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <select id="product-estado">
+                                <option value="nuevo">Nuevo</option>
+                                <option value="usado">Usado</option>
+                                <option value="reparado">Reparado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Condición</label>
+                            <select id="product-condicion">
+                                <option value="excelente">Excelente</option>
+                                <option value="bueno">Bueno</option>
+                                <option value="regular">Regular</option>
+                            </select>
                         </div>
                     </div>
-                    <!-- Subir Producto -->
-                    <div class="config-item">
-                        <h3>Subir Producto</h3>
-                        <form id="uploadForm">
-                            <input type="text" id="productName" placeholder="Nombre">
-                            <input type="number" id="productPrice" placeholder="Precio">
-                            <select id="productCategory">
-                                <option value="ropa">Ropa</option>
-                                <option value="trajes">Trajes</option>
-                                <option value="productos">Productos</option>
-                            </select>
-                            <input type="file" id="productImage" accept="image/*">
-                            <button type="submit">Subir</button>
-                        </form>
+                    
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <select id="product-categoria">
+                            <option value="electronica">Electrónica</option>
+                            <option value="ropa">Ropa</option>
+                            <option value="hogar">Hogar</option>
+                            <option value="vehiculos">Vehículos</option>
+                            <option value="otros">Otros</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="product-ganga"> Marcar como GANGA
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Imágenes</label>
+                        <input type="file" id="product-images" multiple accept="image/*">
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Agregar Producto</button>
+                </form>
+            </div>
+            
+            <!-- Lista productos -->
+            <div id="productos-list">
+                <h3>Productos Disponibles</h3>
+                <div class="filter-buttons">
+                    <button onclick="getProductsByEstado('nuevo')">Nuevos</button>
+                    <button onclick="getProductsByEstado('usado')">Usados</button>
+                    <button onclick="getProductsByEstado('reparado')">Reparados</button>
+                    <button onclick="getAllProducts()">Todos</button>
+                </div>
+                <div id="productos-container"></div>
+            </div>
+        </section>
+
+        <!-- Gangas -->
+        <section id="gangas-section" class="section hidden">
+            <h2>🎯 GANGAS</h2>
+            
+            <!-- Formulario agregar ganga -->
+            <div id="add-ganga-form">
+                <h3>Agregar GANGA</h3>
+                <form id="ganga-form">
+                    <div class="form-group">
+                        <input type="text" id="ganga-titulo" placeholder="Título de la ganga" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="ganga-description" placeholder="Descripción (mínimo 50 caracteres)" required></textarea>
+                    </div>
+                    
+                    <div class="price-container">
+                        <div class="form-group">
+                            <input type="number" id="ganga-price-original" placeholder="Precio original" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="ganga-price-ganga" placeholder="Precio ganga" required>
+                        </div>
+                        <div class="form-group">
+                            <p class="discount">Descuento: <span id="discount-percentage">0</span>%</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Categoría Ganga</label>
+                        <select id="ganga-categoria">
+                            <option value="super-descuento">Super Descuento</option>
+                            <option value="liquidacion">Liquidación</option>
+                            <option value="oferta-especial">Oferta Especial</option>
+                            <option value="ultima-unidad">Última Unidad</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Fecha límite</label>
+                        <input type="date" id="ganga-fecha-limite">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="ganga-destacado"> Destacar esta ganga (aparecerá en página principal)
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Imagen Ganga</label>
+                        <input type="file" id="ganga-image" accept="image/*">
+                    </div>
+                    
+                    <button type="submit" class="ganga-btn">Publicar GANGA</button>
+                </form>
+            </div>
+            
+            <!-- Lista gangas -->
+            <div id="gangas-list">
+                <h3>GANGAS ACTIVAS</h3>
+                <div class="filter-buttons">
+                    <button onclick="getGangasDestacadas()">Destacadas</button>
+                    <button onclick="getAllGangas()">Todas</button>
+                </div>
+                <div id="gangas-container-list"></div>
+            </div>
+        </section>
+
+        <!-- Home -->
+        <section id="home-section" class="section">
+            <div class="welcome">
+                <h2>¡Bienvenido a San Jorge Market!</h2>
+                <p>Tu mercado digital para comprar y vender productos</p>
+                
+                <div class="features">
+                    <div class="feature-card">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h3>Compra Productos</h3>
+                        <p>Encuentra productos nuevos, usados y reparados</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-tag"></i>
+                        <h3>GANGAS</h3>
+                        <p>Ofertas especiales con grandes descuentos</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-user-tie"></i>
+                        <h3>Cliente/Vendedor</h3>
+                        <p>Cambia tu rol según necesites</p>
                     </div>
                 </div>
-            </section>
-        </main>
+            </div>
+        </section>
+    </main>
 
-        <!-- Modal Login -->
-        <div id="loginModal" class="modal">
-            <div class="modal-content">
-                <h2>Registro con Gmail</h2>
-                <p>Selecciona tu tipo de usuario:</p>
-                <select id="userType">
-                    <option value="cliente">Cliente</option>
-                    <option value="vendedor">Vendedor</option>
-                </select>
-                <button id="googleLogin">Login con Google</button>
-                <button id="closeModal">Cancelar</button>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2024 San Jorge Market - Todos los derechos reservados</p>
+            <div class="footer-links">
+                <a href="#contacto">Contacto</a>
+                <a href="#terminos">Términos</a>
+                <a href="#privacidad">Privacidad</a>
             </div>
         </div>
-    </div>
+    </footer>
 
     <!-- Scripts -->
     <script src="src/js/firebase.js"></script>
     <script src="src/js/auth.js"></script>
-    <script src="src/js/mercado.js"></script>
+    <script src="src/js/user.js"></script>
+    <script src="src/js/productos.js"></script>
+    <script src="src/js/gangas.js"></script>
+    <script src="src/js/app.js"></script>
 </body>
 </html>
