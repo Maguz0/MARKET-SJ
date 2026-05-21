@@ -1,22 +1,26 @@
-// Configuración Firebase
+// src/js/firebase.js - CONFIGURACIÓN REAL
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
+
 const firebaseConfig = {
-    apiKey: "TU_API_KEY",
-    authDomain: "TU_PROJECT.firebaseapp.com",
-    projectId: "TU_PROJECT",
-    storageBucket: "TU_PROJECT.appspot.com",
-    messagingSenderId: "TU_SENDER_ID",
-    appId: "TU_APP_ID"
+  apiKey: "AIzaSyB8ti26bz1iEqQwtOC2i5PZf9-JidXhjzY",
+  authDomain: "san-jorge-market.firebaseapp.com",
+  projectId: "san-jorge-market",
+  storageBucket: "san-jorge-market.firebasestorage.app",
+  messagingSenderId: "201668136054",
+  appId: "1:201668136054:web:2c367f1c076efc5d542357",
+  measurementId: "G-TM4F2YTML9"
 };
 
-// Inicializar Firebase
-firebase.initializeApp(firebaseConfig);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
-// Exportar módulos
-const auth = firebase.auth();
-const db = firebase.firestore();
-const storage = firebase.storage();
+// Exportar servicios que necesitas
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
 // Exportar para uso en otros archivos
-window.firebaseAuth = auth;
-window.firebaseDb = db;
-window.firebaseStorage = storage;
+export { auth, db, storage };
