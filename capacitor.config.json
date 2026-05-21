@@ -1,0 +1,13 @@
+{
+  "appId": "com.sanjorge.ventas",
+  "appName": "San Jorge Ventas",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    }
+  }
+}
